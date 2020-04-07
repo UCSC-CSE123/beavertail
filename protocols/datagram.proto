@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+// TODO:
+// Come up with a better name for this.
+package beavertail;
+
+message DatagramPush {
+  string busID                    = 10;
+  uint64 passengerCount           = 20;
+  double passengerCountConfidence = 30;
+  double latitude                 = 40;
+  double longitude                = 50;
+  int64  timestamp                = 60;  // Unix timestamp
+}
+
+message DatagramAck {
+  enum AckType {
+    OK   = 0;
+    BAD  = 1;
+    BUSY = 2;
+  }
+  AckType acknowledgment = 10;
+}
