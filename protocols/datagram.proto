@@ -21,3 +21,11 @@ message DatagramAck {
   }
   AckType acknowledgment = 10;
 }
+
+// gRPC defines services in this case PushDatagram.
+service PushDatagram {
+  // In this service we expose an RPC called EchoMe
+  // it takes in an DatagramPush and returns an DatagramAck
+  // dont ask me about the `{}` bc idk :(
+  rpc Push(DatagramPush) returns (DatagramAck) {}
+}
