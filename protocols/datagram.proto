@@ -24,7 +24,7 @@ message DatagramAck {
 
 // gRPC defines services in this case PushDatagram.
 service PushDatagram {
-  // In this service we expose an RPC called EchoMe
+  // In this service we expose an RPC called Push
   // it takes in an DatagramPush and returns an DatagramAck
   // dont ask me about the `{}` bc idk :(
   rpc Push(DatagramPush) returns (DatagramAck) {}
