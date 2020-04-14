@@ -1,0 +1,7 @@
+---
+Language: Proto
+BasedOnStyle: Google
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignTrailingComments: true
+...
