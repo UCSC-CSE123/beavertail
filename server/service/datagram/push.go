@@ -22,12 +22,38 @@ func NewServer(db *sql.DB) *Server {
 	}
 }
 
+func (srv *Server) insertIntoDB(req *pb.DatagramPush) error {
+	insertStatement := `
+	INSERT INTO Passengers (id, count, confidence, time)
+	VALUES ('$1', '$2', '$3', '$4');`
+
+	_, err := srv.db.Exec(insertStatement,
+		req.GetBusID(),
+		req.GetPassengerCount(),
+		req.GetPassengerCountConfidence(),
+		req.GetTimestamp(),
+	)
+
+	return err
+}
+
 // Push implements the protocol buffer definition.
 func (srv *Server) Push(ctx context.Context, req *pb.DatagramPush) (*pb.DatagramAck, error) {
 
-	// TODO:
-	// Push to the database
+	// TODO: Implement context handling.
 
+	// Insert into the DB.
+	if err := srv.insertIntoDB(req); err != nil {
+		// If there was an error it doesn't necessarily mean
+		// it was a bad query.
+		//
+		// We'll send a busy signal for now.
+		// TODO: Find out how errors are handled by GRPC.
+		return &pb.DatagramAck{
+			Acknowledgment: pb.DatagramAck_BUSY,
+		}, err
+
+	}
 	// If there was no error,
 	// return a point to a datagram ack.
 	return &pb.DatagramAck{
@@ -38,10 +64,9 @@ func (srv *Server) Push(ctx context.Context, req *pb.DatagramPush) (*pb.Datagram
 // InitDatabase initializes the database associated with this server.
 func (srv *Server) InitDatabase() error {
 	createStmt := `
-		CREATE TABLE IF NOT EXISTS Passengers(id INTEGER NOT NULL PRIMARY KEY,
-										bus INTEGER NOT NULL,
+		CREATE TABLE IF NOT EXISTS Passengers(id TEXT NOT NULL PRIMARY KEY,
 										count INTEGER NOT NULL,
-										confidence INTEGER,
+										confidence REAL,
 										time INTEGER);
 	`
 	_, err := srv.db.Exec(createStmt)
