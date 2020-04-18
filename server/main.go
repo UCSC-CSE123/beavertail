@@ -24,4 +24,12 @@ func main() {
 		return
 	}
 
+	// Start the server.
+	const host = "localhost"
+	const port = "3000"
+	if err := srv.Serve(host, port); err != nil {
+		log.Printf("server failed to start: %s", err)
+		return
+	}
+
 }
