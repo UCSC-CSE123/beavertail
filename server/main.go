@@ -1,27 +1,27 @@
 package main
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
+
+	"github.com/UCSC-CSE123/beavertail/server/models"
+	"github.com/UCSC-CSE123/beavertail/server/service/datagram"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "./busdata.db")
+	// Establish a connection to the database.
+	db, err := models.NewDB("./busdata.db")
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	createStmt := `
-		CREATE TABLE IF NOT EXISTS Passengers(id INTEGER NOT NULL PRIMARY KEY,
-										bus INTEGER NOT NULL,
-										count INTEGER NOT NULL,
-										confidence INTEGER,
-										time INTEGER);
-	`
-	_, err = db.Exec(createStmt)
-	if err != nil {
-		log.Printf("%q: %s\n", err, createStmt)
+		log.Printf("failed to connect to db: %s\n", err)
 		return
 	}
+
+	// Inject the DB dependency into the server
+	// and init. the databases associated with it.
+	srv := datagram.NewServer(db)
+	if err := srv.InitDatabase(); err != nil {
+		log.Printf("failed to init. db: %s\n", err)
+		return
+	}
+
 }
