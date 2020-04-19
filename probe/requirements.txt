@@ -1,0 +1,4 @@
+scapy
+manuf-ng
+matplotlib
+lru-dict
