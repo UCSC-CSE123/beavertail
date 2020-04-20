@@ -42,6 +42,13 @@ func (srv *Server) Push(ctx context.Context, req *pb.DatagramPush) (*pb.Datagram
 
 	// TODO: Implement context handling.
 
+	err := ctx.Err()
+	if err != nil {
+		return &pb.DatagramAck{
+			Acknowledgment: pb.DatagramAck_BUSY,
+		}, err
+	}
+
 	// Insert into the DB.
 	if err := srv.insertIntoDB(req); err != nil {
 		// If there was an error it doesn't necessarily mean
