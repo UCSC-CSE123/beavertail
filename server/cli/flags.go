@@ -28,7 +28,7 @@ func GetFlags() (*Flags, error) {
 	flag.StringVar(&cliFlags.Port, "port", defaultPort, "the port to listen on")
 	flag.StringVar(&cliFlags.DBFile, "db", defaultDBFile, "the sqlite3 file to use")
 	flag.BoolVar(&cliFlags.Verbose, "verbose", false, "turn on verbose mode")
-	flag.StringVar(&cliFlags.configFile, "config", "", "use a config.yml file to configure the server, overides all flags")
+	flag.StringVar(&cliFlags.configFile, "config", "", "use a config.yml file to configure the server, overrides all flags")
 	flag.Parse()
 
 	if cliFlags.configFile != "" {
