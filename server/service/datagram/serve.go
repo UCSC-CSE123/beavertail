@@ -8,7 +8,7 @@ import (
 )
 
 func (srv *Server) Serve(host, port string) error {
-	// Setup a lister.
+	// Setup a listener.
 	lis, err := net.Listen("tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return err
