@@ -3,7 +3,7 @@ package models
 
 import "database/sql"
 
-// NewDB instantiates a new connection to the sqllite3 server.
+// NewDB instantiates a new connection to the sqlite3 database.
 func NewDB(dataSource string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", dataSource)
 	if err != nil {
