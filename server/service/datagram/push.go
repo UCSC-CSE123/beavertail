@@ -67,15 +67,3 @@ func (srv *Server) Push(ctx context.Context, req *pb.DatagramPush) (*pb.Datagram
 		Acknowledgment: pb.DatagramAck_OK,
 	}, nil
 }
-
-// InitDatabase initializes the database associated with this server.
-func (srv *Server) InitDatabase() error {
-	createStmt := `
-		CREATE TABLE IF NOT EXISTS Passengers(id TEXT NOT NULL PRIMARY KEY,
-										count INTEGER NOT NULL,
-										confidence REAL,
-										time INTEGER);
-	`
-	_, err := srv.db.Exec(createStmt)
-	return err
-}

@@ -27,12 +27,12 @@ func main() {
 		log.Fatalf("failed to connect to db: %s\n", err)
 	}
 
-	// Inject the DB dependency into the server
-	// and init. the databases associated with it.
-	srv := datagram.NewServer(db)
-	if err := srv.InitDatabase(); err != nil {
+	// Init. the database and inject the dependency
+	// into the server.
+	if err := models.InitDatabase(db); err != nil {
 		log.Fatalf("failed to init. db: %s\n", err)
 	}
+	srv := datagram.NewServer(db)
 
 	// Start the server.
 	if err := srv.Serve(flags.Host, flags.Port); err != nil {

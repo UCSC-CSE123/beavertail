@@ -14,3 +14,15 @@ func NewDB(dataSource string) (*sql.DB, error) {
 	}
 	return db, nil
 }
+
+// InitDatabase initializes the database associated with this server.
+func InitDatabase(db *sql.DB) error {
+	createStmt := `
+		CREATE TABLE IF NOT EXISTS Passengers(id TEXT NOT NULL PRIMARY KEY,
+										count INTEGER NOT NULL,
+										confidence REAL,
+										time INTEGER);
+	`
+	_, err := db.Exec(createStmt)
+	return err
+}
