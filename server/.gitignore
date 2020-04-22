@@ -1,0 +1,5 @@
+# Ignore the server binary
+server
+
+# Also ignore the db file.
+busdata.db
