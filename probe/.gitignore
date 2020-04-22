@@ -1,0 +1,10 @@
+/archives/
+/src/scripts/*
+/src/manuf
+probemon.db
+probemon.db-journal
+*.pyc
+*.bak
+node_modules/
+package-lock.json
+static/js/probe_pb.js
