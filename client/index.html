@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+Test
+    <button onclick="startthis();">Download</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js"></script>
+    <script type="text/javascript">
+    async function startthis() {
+        var initSqlJs = window.initSqlJs;
+
+        const SQL = await initSqlJs({
+          // Required to load the wasm binary asynchronously. Of course, you can host it wherever you want
+          // You can omit locateFile completely when running in node
+          locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/${file}`
+        });
+        var xhr = new XMLHttpRequest();
+        // For example: https://github.com/lerocha/chinook-database/raw/master/ChinookDatabase/DataSources/Chinook_Sqlite.sqlite
+        xhr.open('GET', 'http://localhost:8000/db/taps.db', true);
+        xhr.responseType = 'arraybuffer';
+
+        xhr.onload = e => {
+          var uInt8Array = new Uint8Array(xhr.response);
+          var db = new SQL.Database(uInt8Array);
+          var contents = db.exec("SELECT * FROM Passengers");
+          document.body.innerHTML = JSON.stringify(contents);
+          // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
+        };
+        xhr.send();
+        return 1;
+    }
+    </script>
+</body>
+</html>
