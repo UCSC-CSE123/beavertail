@@ -26,6 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect to db: %s\n", err)
 	}
+	defer db.Close()
 
 	// Init. the database and inject the dependency
 	// into the server.
@@ -38,5 +39,4 @@ func main() {
 	if err := srv.Serve(flags.Host, flags.Port); err != nil {
 		log.Fatalf("server failed to start: %s", err)
 	}
-
 }
