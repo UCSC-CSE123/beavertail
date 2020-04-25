@@ -23,12 +23,12 @@ func NewServer(db *sql.DB) *Server {
 	}
 }
 
-func (srv *Server) insertIntoDB(req *pb.DatagramPush) error {
+func (srv *Server) insertIntoDB(ctx context.Context, req *pb.DatagramPush) error {
 	insertStatement := `
 	INSERT INTO Passengers (id, busID, count, confidence, time)
 	VALUES ($1, $2, $3, $4, $5);`
 
-	_, err := srv.db.Exec(insertStatement,
+	_, err := srv.db.ExecContext(ctx, insertStatement,
 		uuid.New().String(),
 		req.GetBusID(),
 		req.GetPassengerCount(),
@@ -42,30 +42,27 @@ func (srv *Server) insertIntoDB(req *pb.DatagramPush) error {
 // Push implements the protocol buffer definition.
 func (srv *Server) Push(ctx context.Context, req *pb.DatagramPush) (*pb.DatagramAck, error) {
 
-	// TODO: Implement context handling.
+	// Make an error channel.
+	errChan := make(chan error, 1)
 
-	err := ctx.Err()
-	if err != nil {
-		return &pb.DatagramAck{
-			Acknowledgment: pb.DatagramAck_BUSY,
-		}, err
+	// Push to the database with the given context.
+	go func() { errChan <- srv.insertIntoDB(ctx, req) }()
+
+	select {
+	// If the context expires before we finish
+	// then wait for our insert to return (the insertion will be cancelled as well)
+	// then we say why it was cancelled.
+	case <-ctx.Done():
+		<-errChan
+		return &pb.DatagramAck{Acknowledgment: pb.DatagramAck_BAD}, ctx.Err()
+
+	// Otherwise if we're able to read from
+	// the channel before the context expires.
+	case err := <-errChan:
+		if err != nil {
+			return &pb.DatagramAck{Acknowledgment: pb.DatagramAck_BUSY}, err
+		}
+		return &pb.DatagramAck{Acknowledgment: pb.DatagramAck_OK}, nil
 	}
 
-	// Insert into the DB.
-	if err := srv.insertIntoDB(req); err != nil {
-		// If there was an error it doesn't necessarily mean
-		// it was a bad query.
-		//
-		// We'll send a busy signal for now.
-		// TODO: Find out how errors are handled by GRPC.
-		return &pb.DatagramAck{
-			Acknowledgment: pb.DatagramAck_BUSY,
-		}, err
-
-	}
-	// If there was no error,
-	// return a point to a datagram ack.
-	return &pb.DatagramAck{
-		Acknowledgment: pb.DatagramAck_OK,
-	}, nil
 }
