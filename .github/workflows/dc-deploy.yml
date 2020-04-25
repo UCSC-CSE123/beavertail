@@ -13,5 +13,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.2.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Add remote host key
+      run: echo ${{ secrets.DEPLOY_REMOTE_HOST_KEY }} >> ~/.ssh/known_hosts
     - name: Deploy
       run: docker-compose -H "ssh://${{ secrets.DEPLOY_REMOTE_HOST }}" up -d
