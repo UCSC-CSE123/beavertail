@@ -18,4 +18,21 @@ To spin up the server, do
 
     docker-compose up
 
+## Continuous deployment
 
+This repository is configured with GitHub actions, which will automatically
+deploy the service to a remote VPS on a commit to `master` using
+docker-compose. The setup is a little brittle, but can reproduced using an EC2
+instance following these general steps:
+
+1. Start an EC2 instance. It would also be a good idea to assign an Elastic IP
+   to it so that the IP doesn't change if you restart the instance.
+2. Set three secrets for GitHub actions in repository settings:
+   * `DEPLOY_REMOTE_HOST` to the SSH connection information for the EC2
+     instance, e.g., `username@hostname:portname`. It would probably be a good
+     idea to create a new, unprivileged user to run the service from.
+   * `SSH_PRIVATE_KEY` to the text of a private key for the user defined in
+     `DEPLOY_REMOTE_HOST`.
+   * `DEPLOY_REMOTE_HOST_KEY` to the host key of the remote host so it can be
+     manually authorized. From a computer that you have connected to the EC2
+     from, run `ssh-keygen -H -F ${ec2 host as in DEPLOY_REMOTE_HOST}`
