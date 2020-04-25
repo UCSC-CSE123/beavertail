@@ -7,6 +7,7 @@ import (
 	"database/sql"
 
 	pb "github.com/UCSC-CSE123/beavertail/server/beavertail"
+	"github.com/google/uuid"
 )
 
 // Server is an unimplemented push datagram server.
@@ -24,10 +25,11 @@ func NewServer(db *sql.DB) *Server {
 
 func (srv *Server) insertIntoDB(req *pb.DatagramPush) error {
 	insertStatement := `
-	INSERT INTO Passengers (id, count, confidence, time)
-	VALUES ('$1', '$2', '$3', '$4');`
+	INSERT INTO Passengers (id, busID, count, confidence, time)
+	VALUES ($1, $2, $3, $4, $5);`
 
 	_, err := srv.db.Exec(insertStatement,
+		uuid.New().String(),
 		req.GetBusID(),
 		req.GetPassengerCount(),
 		req.GetPassengerCountConfidence(),

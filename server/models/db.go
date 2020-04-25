@@ -19,6 +19,7 @@ func NewDB(dataSource string) (*sql.DB, error) {
 func InitDatabase(db *sql.DB) error {
 	createStmt := `
 		CREATE TABLE IF NOT EXISTS Passengers(id TEXT NOT NULL PRIMARY KEY,
+										busID TEXT NOT NULL,
 										count INTEGER NOT NULL,
 										confidence REAL,
 										time INTEGER);
