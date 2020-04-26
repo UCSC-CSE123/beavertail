@@ -1,31 +1,65 @@
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bus data</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+    <style type="text/css">
+        .container { padding: 1em 2em; max-width: 768px; margin: 0 auto; letter-spacing: normal !important; }
+        tr:hover { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
-Test
-    <button onclick="startthis();">Download</button>
+    <div class="pure-g container">
+        <div class="pure-u-1">
+            <button onclick="startthis();" class="pure-button">Load data</button>
+            <table class="pure-table pure-table-horizontal" id="db">
+            </table>
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js"></script>
     <script type="text/javascript">
+    function createTable(tableData) {
+        // I referenced https://stackoverflow.com/q/15164655
+        // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
+        var thead = document.createElement('thead');
+        var tbody = document.createElement('tbody');
+        var header = document.createElement('tr');
+        tableData[0]['columns'].forEach(column => {
+            var cell = document.createElement('th');
+            cell.appendChild(document.createTextNode(column));
+            header.appendChild(cell);
+        });
+        thead.appendChild(header);
+        tableData[0]['values'].forEach(row => {
+            var tr = document.createElement('tr');
+            row.forEach(cell => {
+                var td = document.createElement('td');
+                td.appendChild(document.createTextNode(cell));
+                tr.append(td);
+            });
+            tbody.appendChild(tr);
+        });
+        const dbTable = document.getElementById('db');
+        dbTable.innerHTML = '';
+        dbTable.appendChild(thead);
+        dbTable.appendChild(tbody);
+    }
     async function startthis() {
         var initSqlJs = window.initSqlJs;
 
         const SQL = await initSqlJs({
-          // Required to load the wasm binary asynchronously. Of course, you can host it wherever you want
-          // You can omit locateFile completely when running in node
           locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/${file}`
         });
         var xhr = new XMLHttpRequest();
-        // For example: https://github.com/lerocha/chinook-database/raw/master/ChinookDatabase/DataSources/Chinook_Sqlite.sqlite
-        xhr.open('GET', 'http://localhost:8000/db/taps.db', true);
+        xhr.open('GET', '/db/taps.db', true);
         xhr.responseType = 'arraybuffer';
 
         xhr.onload = e => {
           var uInt8Array = new Uint8Array(xhr.response);
           var db = new SQL.Database(uInt8Array);
           var contents = db.exec("SELECT * FROM Passengers");
-          document.body.innerHTML = JSON.stringify(contents);
-          // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
+          createTable(contents);
         };
         xhr.send();
         return 1;
