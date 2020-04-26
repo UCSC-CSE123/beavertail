@@ -1,13 +1,10 @@
-name: Docker Compose deploy
-
+name: Docker Compose
 on:
   push:
     branches: [ master ]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.2.0
@@ -15,5 +12,7 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Add remote host key
       run: echo "${{ secrets.DEPLOY_REMOTE_HOST_KEY }}" >> ~/.ssh/known_hosts
+    - name: build
+      run: docker-compose build --parallel
     - name: Deploy
       run: docker-compose -H "ssh://${{ secrets.DEPLOY_REMOTE_HOST }}" up -d
