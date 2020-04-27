@@ -9,7 +9,7 @@ services:
       - '443:443/tcp'
     volumes:
       - 'data:/usr/share/nginx/html/db/'
-      - './client:/usr/share/nginx/html/'
+      #- './client:/usr/share/nginx/html/'
   grpc:
     build:
       context: '.'
