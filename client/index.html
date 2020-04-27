@@ -25,6 +25,10 @@
         var thead = document.createElement('thead');
         var tbody = document.createElement('tbody');
         var header = document.createElement('tr');
+        if (tableData.length < 1) {
+            alert('No data!');
+            return;
+        }
         tableData[0]['columns'].forEach(column => {
             var cell = document.createElement('th');
             cell.appendChild(document.createTextNode(column));
