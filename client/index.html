@@ -16,6 +16,11 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js"></script>
     <script type="text/javascript">
+    function translateTime(unixTime){
+        var humanTime = new Date(unixTime);
+        humanTime = humanTime.toLocaleString();
+        return humanTime;
+    }
     function createTable(tableData) {
         // I referenced https://stackoverflow.com/q/15164655
         // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
@@ -34,7 +39,10 @@
         thead.appendChild(header);
         tableData[0]['values'].forEach(row => {
             var tr = document.createElement('tr');
-            row.forEach(cell => {
+            row.forEach((cell, index) => {
+                if(index == 3){
+                    cell = translateTime(cell);
+                }
                 var td = document.createElement('td');
                 td.appendChild(document.createTextNode(cell));
                 tr.append(td);
