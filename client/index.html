@@ -40,7 +40,10 @@
         tableData[0]['values'].forEach(row => {
             var tr = document.createElement('tr');
             row.forEach((cell, index) => {
-                if(index == 3){
+                if(index == 3){ // round confidence percentages
+                    cell = Math.round(10*cell)/10;
+                }
+                if(index == 4){ // translate time column
                     cell = translateTime(cell);
                 }
                 var td = document.createElement('td');
