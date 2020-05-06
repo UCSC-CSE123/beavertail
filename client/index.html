@@ -40,6 +40,9 @@
         tableData[0]['values'].forEach(row => {
             var tr = document.createElement('tr');
             row.forEach((cell, index) => {
+                if(index==0){ // delete first column "id"
+                    row.deleteCell(0);
+                }
                 if(index == 3){ // round confidence percentages
                     cell = Math.round(10*cell)/10;
                 }
