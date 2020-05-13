@@ -6,6 +6,7 @@ import time
 import argparse
 import subprocess
 import sys
+sys.path.append('../../protocols')
 import sqlite3
 from manuf import manuf
 import base64
