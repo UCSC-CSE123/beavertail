@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 # -*- encoding: utf-8 -*-
 
+import random
 import time
 import argparse
 import subprocess
 import sys
+sys.path.append('../../protocols')
 import sqlite3
 from manuf import manuf
 import base64
@@ -12,6 +14,9 @@ from lru import LRU
 import signal
 import struct
 import threading
+import grpc
+import datagram_pb2
+import datagram_pb2_grpc
 
 NAME = 'probemon'
 DESCRIPTION = "a command line tool for logging 802.11 probe requests"
@@ -22,7 +27,7 @@ MAX_QUEUE_LENGTH = 50
 MAX_ELAPSED_TIME = 60 # seconds
 MAX_VENDOR_LENGTH = 25
 MAX_SSID_LENGTH = 15
-
+arr = []
 # read config variable from config.py file
 import config
 
@@ -44,6 +49,8 @@ class MyCache:
         self.vendor = LRU(size)
 
 def print_fields(fields):
+    if fields[1] not in arr:
+        arr.append(fields[1])
     if fields[1] in config.KNOWNMAC:
         fields[1] = '%s%s%s%s' % (Colors.bold, Colors.red, fields[1], Colors.endc)
     # convert time to iso
@@ -62,11 +69,21 @@ def print_fields(fields):
         ssid = ssid.ljust(MAX_SSID_LENGTH)
     fields[2] = vendor
     fields[3] = ssid
-    try:
-        print('%s\t%s\t%s\t%s\t%d' % tuple(fields))
-    except TypeError:
-        print("Empty field error")
-
+#        print('%s\t%s\t%s\t%s\t%d' % tuple(fields))
+    print(len(arr))
+    with grpc.insecure_channel('beavertail.natan.la:3000') as channel:
+        stub = datagram_pb2_grpc.PushDatagramStub(channel)
+        resp = stub.Push(
+               request=datagram_pb2.DatagramPush(
+                        busID="Bus 1",
+                        passengerCount = len(arr),
+                        passengerCountConfidence = random.random()*10+85 ,
+                        latitude = 37.554947,
+                        longitude = -122.271057,
+                        timestamp = int(time.time())
+	       )
+        )
+    print(resp.acknowledgment)
 class MyQueue:
     def __init__(self):
         self.values = []
