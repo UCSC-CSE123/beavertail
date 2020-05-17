@@ -2,19 +2,22 @@
 
 ![Beavertail logo](https://user-images.githubusercontent.com/13544676/78614646-f9e5d900-7823-11ea-8533-2a3ff8a82195.png)
 
-Beavertail is the backend component of the bus management system handling bus responses and database queries 
+Beavertail is a system that infers the amount of pedestrians in a given area
+(say, passengers on a bus) by monitoring Wi-Fi probe requests and reports that
+data to a remote server. The project can be split into three largely
+discrete components, each living together in this repository:
+* The probe (i.e., a Raspberry Pi or other low-powered deviced with a
+  compatible Wi-Fi antenna). It aggregates pedestrian density information
+  on-device and sends that information to a remote server. Its source code
+  is in [probe/](probe/). It's written in Python.
+* The server. Its source code lives in [server/](server/). It is written in
+  Go. It exposes a gRPC service which the probe uses to phone home.
+* The client, which lives in [client/](client/). It presents the information
+  sent from the probes.
 
 ## Getting started
-
-Beavertail's code is split into three discrete components:
-* The probe code, which runs on a Raspberry Pi sitting on a bus and pings a
-  remote server
-* The server code, which runs somewhere in the cloud and populates a database
-  based on pings from the probes. It's written in go and uses gRPC.
-* The client code, which presents the information in the database to a user
-  in a nice way. It runs alongside the server code in an nginx container.
-
-To spin up the server, do
+The server and client are generally run from the same machine. They can both
+be spun up using Docker, a la:
 
     docker-compose up
 
