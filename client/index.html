@@ -46,7 +46,7 @@
                     cell = Math.round(10*cell)/10;
                 }
                 if(index == 4){ // translate time column
-                    cell = translateTime(cell / 1000);
+                    cell = translateTime(cell / 1000000);
                 }
                 var td = document.createElement('td');
                 td.appendChild(document.createTextNode(cell));
