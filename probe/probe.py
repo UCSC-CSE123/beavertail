@@ -50,33 +50,74 @@ class AbstractCounter(abc.ABC):
         raise NotImplementedError
 
 
-# TODO: Delete this
-class ExampleTimerCounter(AbstractCounter):
-    def __init__(self):
+class TimerCounter(AbstractCounter):
+    """
+    Considers a device present if it has been seen in the last ``duration``
+    seconds.
+    """
+    def __init__(self, duration: int = 90):
+        self.duration = 90
         self.devices = {}
 
-    def register(self, signal) -> bool:
-        self.devices[signal.mac_address] = time.now()
+    def register(self, request: scapy.packet.Packet) -> None:
+        """
+        Called for every probe request seen by :class:`scapy.all.AsyncSniffer`.
+        """
+        self.devices[hash(request.addr2)] = datetime.datetime.now()
 
-    def count(self) -> (int, float):
-        for device, last in self.devices.items():
-            if last < five_seconds_ago:
-                del self.devices[device]
-        return len(self.devices), 99.0
+    def _is_recent_enough(self, timestamp):
+        lower_bound = datetime.timedelta(seconds=self.duration)
+        diff = datetime.datetime.now() - lower_bound
+        return diff > datetime.timedelta(0)
+
+    def count(self) -> typing.Tuple(int, float):
+        """
+        Returns the amount of passengers determined with a confidence
+        assessment.
+
+        The confidence assessment is theoretically optional but is reported
+        anyway. If the counting method does not have a reliable confidence
+        metric, it should be provided as zero.
+        """
+        self.devices = {dev: ts for dev, ts in self.devices.items() if _is_recent_enough(ts))}
+        return (len(self.devices), 0)
 
 
-# TODO: Delete this
-class ResetCounter(AbstractCounter):
-    def __init__(self):
-        self.devices = []
+class NaiveFrequencyCounter(AbstractCounter):
+    """
+    Consider a device present if we receive ``remember_after`` probe requests
+    each count period. By default, ``remember_after`` is set to 5 sightings.
+    """
 
-    def register(self, signal) -> bool:
-        self.devices.append(signal.mac_address)
+    def __init__(self, remember_after: int = 5):
+        """
+        :param int remember_after: Minimum amount of "sightings" needed to
+            consider a device present
+        """
+        self.remember_after = remember_after
+        self.devices = collections.Counter()
 
-    def count(self) -> (int, float):
-        passengers = len(self.devices)
-        self.devices = []
-        return passengers, 99.0
+    def register(self, request: scapy.packet.Packet) -> None:
+        """
+        Called for every probe request seen by :class:`scapy.all.AsyncSniffer`.
+        """
+        # We store the hash of the MAC address instead of the MAC address
+        # itself as a weak measure to minize storing any potentially
+        # sensitive data
+        self.devices[hash(request.addr2)] += 1
+
+    def count(self) -> typing.Tuple(int, float):
+        """
+        Returns the amount of passengers determined with a confidence
+        assessment.
+
+        The confidence assessment is theoretically optional but is reported
+        anyway. If the counting method does not have a reliable confidence
+        metric, it should be provided as zero.
+        """
+        count = len(lambda x: x > self.remember_after, self.devices.values())
+        self.devices.clear()
+        return (count, 0)
 
 
 if __name__ == '__main__':
