@@ -44,3 +44,8 @@ class Register_Tester():
             self.devices.remove(p)
             p.strength = p.strength + (-0.5 if random.random() < 0.5 else 0.5)
             self.insert_new_packet(p)
+
+    # Calling start_async on the test register starts a new thread
+    # That updates this object auto-magically.
+    def start_async(self):
+        pass
