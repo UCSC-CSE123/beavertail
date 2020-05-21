@@ -18,8 +18,8 @@ class Register_Tester():
     """
 
     class Packet():
-        def __init__(self, name, strength):
-            self.name = hash(name)
+        def __init__(self, addr2, strength):
+            self.addr2 = hash(addr2)
             self.strength = float(strength)
 
     def __init__(self, prn, add_time, del_time, update_time):
@@ -31,8 +31,8 @@ class Register_Tester():
         self.prn(Packet)
         self.devices.add(Packet)
 
-    def insert_new(self, name, strength):
-        self.insert_new_packet(self.Packet(name, strength))
+    def insert_new(self, addr2, strength):
+        self.insert_new_packet(self.Packet(addr2, strength))
 
     def remove(self):
         if len(self.devices) > 0:
