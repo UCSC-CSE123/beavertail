@@ -50,14 +50,20 @@ class Register_Tester:
         self.insert_new_packet(self.Packet(addr2, strength))
 
     def add(self):
+        if self.add_time == -1:
+            return
         self.insert_new(random.getrandbits(128), random.randint(-127,
                         128))
 
     def remove(self):
+        if self.del_time == -1:
+            return
         if len(self.devices) > 0:
             self.devices.remove(random.sample(self.devices, 1)[0])
 
     def update(self):
+        if self.update_time == -1:
+            return
         if len(self.devices) > 0:
             p = random.sample(self.devices, 1)[0]
             self.devices.remove(p)
