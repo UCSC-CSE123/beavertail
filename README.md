@@ -17,9 +17,20 @@ discrete components, each living together in this repository:
 
 ## Getting started
 The server and client are generally run from the same machine. They can both
-be spun up using Docker, a la:
+be spun up using Docker Compose, a la:
 
-    docker-compose up
+    $ docker-compose up -d
+
+This will...
+* Present the client on port 80 (which can be accessed via your web browser)
+* Present the gRPC service on port 3000
+
+See [docker-compose.yml](docker-compose.yml) for more details on how the
+system is configured.
+
+To bring everything down, do
+
+    $ docker-compose down
 
 ## Continuous deployment
 
