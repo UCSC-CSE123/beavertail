@@ -17,15 +17,6 @@ sys.path.append(os.path.join(cwd, '..', 'protocols'))
 import datagram_pb2  # noqa: E402
 import datagram_pb2_grpc  # noqa: E402
 
-# Send a passenger count to the remote server every {x} seconds
-BEAVERTAIL_PING_INTERVAL = 15
-
-# Consider a device "present" if it has been seen in the last
-# {BEAVERTAIL_DEV_KEEPALIVE} seconds and if when it was seen the device had a
-# RSSI greater than {BEAVERTAIL_DEV_KEEPALIVE}
-BEAVERTAIL_DEV_KEEPALIVE = 90
-BEAVERTAIL_SIG_THRESHOLD = -60
-
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -149,10 +140,10 @@ if __name__ == '__main__':
         sys.exit(0)
     _, bus_id, interface = sys.argv
 
-    # TODO: We probably need to use `iw` to set channel on interface.
-    # Probemon does this. We don't, yet. We should research if this is even
-    # necessary.
-    adapter = NaiveFrequencyCounter()
+    # Import config here to prevent a recursive import
+    import config
+
+    adapter = config.BEAVERTAIL_ADAPTER(**config.BEAVERTAILADAPTER_CONFIG)
     sniff = scapy.all.AsyncSniffer(prn=lambda p: adapter.register(p),
                                    iface=interface,
                                    store=0,
@@ -160,7 +151,7 @@ if __name__ == '__main__':
     sniff.start()
     while True:
         try:
-            time.sleep(BEAVERTAIL_PING_INTERVAL)
+            time.sleep(config.BEAVERTAIL_PING_INTERVAL)
             passengers, confidence = adapter.count()
             log.info(f"Counted {passengers} devices with confidence {confidence}")
             payload = {
@@ -172,7 +163,7 @@ if __name__ == '__main__':
                 'timestamp': int(time.time()),
             }
             # TODO: Make this configurable
-            with grpc.insecure_channel('beavertail.natan.la:3000') as ch:
+            with grpc.insecure_channel(config.BEAVERTAIL_HOSTNAME) as ch:
                 stub = datagram_pb2_grpc.PushDatagramStub(ch)
                 resp = stub.Push(request=datagram_pb2.DatagramPush(**payload))
                 log.debug(f"Push status {resp.acknowledgment}")
