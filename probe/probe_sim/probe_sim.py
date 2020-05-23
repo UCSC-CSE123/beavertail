@@ -33,7 +33,7 @@ class Register_Tester:
         add_time,
         del_time,
         update_time,
-        ):
+    ):
 
         self.devices = set()
         self.thread = None
@@ -68,7 +68,7 @@ class Register_Tester:
             p = random.sample(self.devices, 1)[0]
             self.devices.remove(p)
             p.strength = p.strength + ((-0.5 if random.random()
-                    < 0.5 else 0.5))
+                                        < 0.5 else 0.5))
             self.insert_new_packet(p)
 
     def start_async_helper(self):
