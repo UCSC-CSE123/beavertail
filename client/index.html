@@ -4,10 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bus data</title>
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
-    <style type="text/css">
-        .container { padding: 1em 2em; max-width: 768px; margin: 0 auto; letter-spacing: normal !important; }
-        tr:hover { background-color: #f2f2f2; }
-    </style>
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="pure-g container">
@@ -19,6 +16,11 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js"></script>
     <script type="text/javascript">
+    function translateTime(unixTime){
+        var humanTime = new Date(unixTime);
+        humanTime = humanTime.toLocaleString();
+        return humanTime;
+    }
     function createTable(tableData) {
         // I referenced https://stackoverflow.com/q/15164655
         // contents is now [{columns:['col1','col2',...], values:[[first row], [second row], ...]}]
@@ -29,7 +31,8 @@
             alert('No data!');
             return;
         }
-        tableData[0]['columns'].forEach(column => {
+        tableData[0]['columns'].forEach((column, index) => {
+            if (index == 0) { return; }  // ignore `id` col
             var cell = document.createElement('th');
             cell.appendChild(document.createTextNode(column));
             header.appendChild(cell);
@@ -37,7 +40,14 @@
         thead.appendChild(header);
         tableData[0]['values'].forEach(row => {
             var tr = document.createElement('tr');
-            row.forEach(cell => {
+            row.forEach((cell, index) => {
+                if (index == 0) { return; }  // ignore `id` col
+                if(index == 3){ // round confidence percentages
+                    cell = Math.round(10*cell)/10;
+                }
+                if(index == 4){ // translate time column
+                    cell = translateTime(cell / 1000000);
+                }
                 var td = document.createElement('td');
                 td.appendChild(document.createTextNode(cell));
                 tr.append(td);
