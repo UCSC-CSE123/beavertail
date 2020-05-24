@@ -50,3 +50,37 @@ instance following these general steps:
    * `DEPLOY_REMOTE_HOST_KEY` to the host key of the remote host so it can be
      manually authorized. From a computer that you have connected to the EC2
      from, run `ssh-keygen -H -F ${ec2 host as in DEPLOY_REMOTE_HOST}`
+
+### Testing
+
+Some code formatting tools (in particular, golanglint-ci and pycodestyle) run
+as part of this pipeline.
+
+## Known bugs
+
+There are a number of known issues with this codebase (and likely some yet
+unknown) that weren't fixed in time for the prototype release. Because work on
+the prototype is now frozen, associated issues have been tagged as wontfix and
+closed.
+
+* **Database caching is misconfigured** The client will not fetch a newer
+  version of the database, even if it exists. The short-term workaround is to
+  interact with the client in an incognito window or private session.
+  Force-clearing the cache (i.e. Shift+Refresh) has also been demonstrated to
+  work, though for some reason not as much as with the former method. The
+  long-term fix to this issue is to correct the caching configuration in Nginx,
+  or to append some random query string to the XHR that downloads the database
+  from the server. (See #32.)
+
+* **Continuous deployment sometimes deploys a stale version** This can be fixed
+  by manually deploying, which is a hassle but is easy enough. There's something
+  wrong with the workflow itself; instead of identifying what exactly is wrong
+  and fixing it, it is likely easier (and "nicer") to start pushing the updated
+  container to a registry.
+
+* **No end-to-end integration testing or automated testing** We have some tools
+  for manual testing (in addition to what is in this repository, also see
+  UCSC-CSE123/gardenia and UCSC-CSE123/sunflower) but those tools do not run as
+  part of our CI/CD pipeline. We also don't have any tools that test the entire
+  system at once end-to-end.
+
