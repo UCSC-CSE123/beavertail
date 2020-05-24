@@ -1,6 +1,6 @@
-# probepi
+# probe
 
-This repository contains Raspberry Pi installation and initialization
+This folder contains Raspberry Pi installation and initialization
 instructions. For this project, we are using [Raspbian][raspbian] as our
 operating system on [Raspberry Pi Model B+][modelb] boards.
 
