@@ -1,5 +1,3 @@
-<!-- vim: set textwidth=80 ft=markdown: -->
-
 # Design decisions
 
 This document outlines rationales for the design decisions that have been made,
@@ -85,4 +83,3 @@ long-term storage of that data entirely:
 
 1. The data described above is the only data accessible to the client (as it is
    the only data stored at all).
-
