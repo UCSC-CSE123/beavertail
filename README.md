@@ -28,9 +28,36 @@ This will...
 See [docker-compose.yml](docker-compose.yml) for more details on how the
 system is configured.
 
-To bring everything down, do
+To bring the server and the client down, do
 
     $ docker-compose down
+
+If you don't have Docker or Docker Compose, you can install both easily by
+following [this guide](https://docs.docker.com/compose/install/). If you aren't
+a big Docker fan, you can also run and install both components locally -- refer
+to the README in the `client/` and `server/` subdirectories. (We don't generally
+test with this method though. You've been warned.)
+
+### Probe
+
+See [probe/README.md](probe/README.md) for instructions on how to get the probe
+running. (The server and client aren't much use without something to feed data
+into the system.)
+
+### Simulations
+
+If you don't have the hardware to run the probe on-hand, you can use
+[sunflower](https://github.com/UCSC-CSE123/sunflower) to generate dummy data
+and [gardenia](https://github.com/UCSC-CSE123/gardenia) to ship that data to the
+server. For instructions on setting this up, refer to the
+[gardenia README](https://github.com/UCSC-CSE123/gardenia#building-and-running).
+
+The probe also has its own test code as well.
+
+#### Clearing the database
+
+To delete the database, remove the `data` volume created by `docker-compose`.
+
 
 ## Continuous deployment
 
