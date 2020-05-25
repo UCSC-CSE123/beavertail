@@ -143,7 +143,7 @@ if __name__ == '__main__':
     # Import config here to prevent a recursive import
     import config
 
-    adapter = config.BEAVERTAIL_ADAPTER(**config.BEAVERTAILADAPTER_CONFIG)
+    adapter = config.BEAVERTAIL_ADAPTER(**config.BEAVERTAIL_ADAPTER_CONFIG)
     sniff = scapy.all.AsyncSniffer(prn=lambda p: adapter.register(p),
                                    iface=interface,
                                    store=0,
