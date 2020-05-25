@@ -44,9 +44,20 @@ There are multiple ways to enable monitoring on chipsets, however, many of them
 require killing the NetworkManager making it more difficult to maintain a wifi
 connection while probing.
 
-##### Simple Configuration
+##### Simple configuration
 
-We need to modify some configuration to (1) connect our Raspberry Pi to our
+To use a given network interface `foo` with `probe.py`, it must be set to
+monitor mode first:
+
+    $ sudo ifconfig foo down   # We need to bring it down before setting mode
+    $ sudo iwconfig foo mode monitor
+    $ sudo ifconfig foo up
+
+These changes may not persist after a reboot.
+
+##### Persisting settings on boot
+
+We can modify some configuration to (1) connect our Raspberry Pi to our
 desired wireless network (using `wlan0`, the inbuilt wireless adapter) and to
 (2) enable monitoring on `wlan1`, our external interface, at boot time.
 
